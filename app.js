@@ -72,7 +72,7 @@ function hold () {
     document.querySelector('#score-' + activePlayer).textContent = scores[activePlayer];
 
     //2. Check if player won
-    if (scores[activePlayer] >= 10) {
+    if (scores[activePlayer] >= 100) {
         document.getElementById('name-' + activePlayer).textContent = 'Winner!';
         document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
         document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
