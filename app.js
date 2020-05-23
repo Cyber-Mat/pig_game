@@ -16,6 +16,15 @@ scores = [0,0];
 totalScore = 0;
 activePlayer = 0;
 
+document.getElementById('score-0').textContent = '0';
+document.getElementById('score-1').textContent = '0';
+document.getElementById('current-0').textContent = '0';
+document.getElementById('current-1').textContent = '0';
+
+/*document.getElementsByClassName('player-score').textContent = '0';
+document.getElementsByClassName('player-current-score').textContent = '0';*/
+
+
 document.querySelector('.dice').style.display = 'none';
 
 function btn () {
@@ -30,8 +39,10 @@ function btn () {
     
     //3. Update total score if dice roll > 1
     if (dice>1) {
-        document.querySelector('#score-' + activePlayer).textContent = totalScore + dice;
+        totalScore+=dice;
+        document.querySelector('#score-' + activePlayer).textContent = totalScore
     } else {
+        totalScore = 0;
         document.querySelector('#score-' + activePlayer).textContent = totalScore;
     }
     
