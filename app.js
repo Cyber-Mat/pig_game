@@ -10,42 +10,92 @@ GAME RULES:
 */
 
 
-let scores, totalScore, activePlayer;
+let scores, roundScore, activePlayer;
 
-scores = [0,0];
-totalScore = 0;
-activePlayer = 0;
+/*scores = [0,0];
+roundScore = 0;
+activePlayer = 0;*/
 
-document.getElementById('score-0').textContent = '0';
-document.getElementById('score-1').textContent = '0';
-document.getElementById('current-0').textContent = '0';
-document.getElementById('current-1').textContent = '0';
+//Set all default values to zero
 
-/*document.getElementsByClassName('player-score').textContent = '0';
-document.getElementsByClassName('player-current-score').textContent = '0';*/
+backToBase ();
+
+function backToBase () {
+    scores = [0,0];
+    roundScore = 0;
+    activePlayer = 0;
+
+    document.getElementById('score-0').textContent = '0';
+    document.getElementById('score-1').textContent = '0';
+    document.getElementById('current-0').textContent = '0';
+    document.getElementById('current-1').textContent = '0';
+
+    document.getElementById('name-0').textContent = 'Player 1';
+    document.getElementById('name-1').textContent = 'Player 2';
+
+    document.querySelector('.dice').style.display = 'none';
+    document.querySelector('.player-0-panel').classList.remove('winner');
+    document.querySelector('.player-1-panel').classList.remove('winner');
+
+    document.querySelector('.player-0-panel').classList.remove('active');
+    document.querySelector('.player-1-panel').classList.remove('active');
+    document.querySelector('.player-0-panel').classList.add('active');
+};
 
 
-document.querySelector('.dice').style.display = 'none';
-
-function btn () {
+//Roll function
+function roll () {
     // 1. Generate random number for each dice roll
     let dice = Math.floor(Math.random() * 6) + 1; 
-    document.querySelector('#current-' + activePlayer).textContent = dice;
     
-    //2. Display generated dice number
+    //2. Display dice with generated number
     let diceDOM = document.querySelector('.dice');
     diceDOM.style.display = 'block';
     diceDOM.setAttribute('src', 'dice-' + dice + '.png');
     
     //3. Update total score if dice roll > 1
-    if (dice>1) {
-        totalScore+=dice;
-        document.querySelector('#score-' + activePlayer).textContent = totalScore
-    } else {
-        totalScore = 0;
-        document.querySelector('#score-' + activePlayer).textContent = totalScore;
-    }
+    if (dice !== 1) {
+        roundScore+=dice;
+        //Display updated score
+        document.getElementById('current-' + activePlayer).textContent = roundScore;
     
-} 
+    //4. Change player if dice roll = 1
+    } else {        
+        changePlayer();
+    };
+};
 
-document.querySelector('.btn-roll').addEventListener('click', btn);
+//Hold funtion
+function hold () {
+    //1. Update total scores
+    scores[activePlayer] += roundScore;
+    document.querySelector('#score-' + activePlayer).textContent = scores[activePlayer];
+
+    //2. Check if player won
+    if (scores[activePlayer] >= 10) {
+        document.getElementById('name-' + activePlayer).textContent = 'Winner!';
+        document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
+        document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
+        document.querySelector('.dice').style.display = 'none'; 
+    } else {
+        //3. Change active player
+        changePlayer();
+    }
+};
+
+document.querySelector('.btn-roll').addEventListener('click', roll);
+document.querySelector('.btn-hold').addEventListener('click', hold);
+
+function changePlayer () {
+    roundScore = 0;
+    document.getElementById('current-' + activePlayer).textContent = roundScore;
+
+    activePlayer === 0 ? activePlayer++ : activePlayer--;
+
+    document.querySelector('.player-0-panel').classList.toggle('active');
+    document.querySelector('.player-1-panel').classList.toggle('active');
+    document.querySelector('.dice').style.display = 'none';    
+};
+
+//New game
+document.querySelector('.btn-new').addEventListener('click', backToBase);
