@@ -10,20 +10,16 @@ GAME RULES:
 */
 
 
-let scores, roundScore, activePlayer,gamePlaying;
-
-/*scores = [0,0];
-roundScore = 0;
-activePlayer = 0;*/
+let scores, roundScore, activePlayer, gamePlaying, currentScore;
 
 //Set all default values to zero
+backToBase();
 
-backToBase ();
-
-function backToBase () {
-    scores = [0,0];
+function backToBase() {
+    scores = [0, 0];
     roundScore = 0;
     activePlayer = 0;
+    currentScore = [];
 
     //State variable
     gamePlaying = true;
@@ -47,33 +43,47 @@ function backToBase () {
 
 
 //Roll function
-function roll () {
+function roll() {
     if (gamePlaying) {
-        // 1. Generate random number for each dice roll
-        let dice = Math.floor(Math.random() * 6) + 1; 
-    
-        //2. Display dice with generated number
+        // Generate random number for each dice roll
+        let dice = Math.floor(Math.random() * 6) + 1;
+        currentScore.push(dice);
+
+        // Display dice with generated number
         let diceDOM = document.querySelector('.dice');
         diceDOM.style.display = 'block';
         diceDOM.setAttribute('src', 'dice-' + dice + '.png');
-    
-        //3. Update total score if dice roll > 1
-        if (dice !== 1) {
-            roundScore+=dice;
-            //Display updated score
-            document.getElementById('current-' + activePlayer).textContent = roundScore;
-    
-        //4. Change player if dice roll = 1
-        } else {        
+
+        // Change player if dice roll = 1
+        if (dice === 1) {
             changePlayer();
+
+            // If player rolls two 6 consecutively
+        } else if (dice === 6) {
+            roundScore += dice;
+            document.getElementById('current-' + activePlayer).textContent = roundScore;
+
+            let previousTotal = currentScore[currentScore.length - 1] + currentScore[currentScore.length - 2];
+            if (previousTotal === 12) {
+                roundScore = 0;
+                scores[activePlayer] = 0;
+                document.getElementById('current-' + activePlayer).textContent = roundScore;
+                document.querySelector('#score-' + activePlayer).textContent = scores[activePlayer];
+
+                changePlayer();
+            }
+            // Update total score if dice roll > 1
+        } else {
+            roundScore += dice;
+            document.getElementById('current-' + activePlayer).textContent = roundScore;
         };
-    };  
+    };
 };
 
 //Hold funtion
-function hold () {
+function hold() {
     if (gamePlaying) {
-         //1. Update total scores
+        //1. Update total scores
         scores[activePlayer] += roundScore;
         document.querySelector('#score-' + activePlayer).textContent = scores[activePlayer];
 
@@ -82,26 +92,27 @@ function hold () {
             document.getElementById('name-' + activePlayer).textContent = 'Winner!';
             document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
             document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
-            document.querySelector('.dice').style.display = 'none'; 
+            document.querySelector('.dice').style.display = 'none';
 
             //State variable
             gamePlaying = false;
-        }else {
+        } else {
             //3. Change active player
             changePlayer();
         };
     };
 };
 
-function changePlayer () {
+function changePlayer() {
     roundScore = 0;
+    currentScore = [];
     document.getElementById('current-' + activePlayer).textContent = roundScore;
 
     activePlayer === 0 ? activePlayer++ : activePlayer--;
 
     document.querySelector('.player-0-panel').classList.toggle('active');
     document.querySelector('.player-1-panel').classList.toggle('active');
-    document.querySelector('.dice').style.display = 'none';    
+    document.querySelector('.dice').style.display = 'none';
 };
 
 //Listeners
